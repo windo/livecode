@@ -30,7 +30,7 @@ $blips = 1
 $rand_wave = false
 $rand_res = false
 $rand_cutoff = false
-$max_cutoff = 60
+$max_cutoff = 90
 $wave = 0
 $octaves = 3
 

@@ -15,7 +15,7 @@ $cmap = {
 # amp
 $drum_amp = 1.0
 # One of: :chorus, :verse
-$part = :verse
+  $part = :verse
 # One of: :slow, :fast, :chord
 $pstyle = :chord
 
@@ -73,17 +73,13 @@ live_loop :chords do
   sync_bpm :tick
   case $part
   when :chorus
-    2.times do
-      pp [:am, :c, :g, :am, :am, :am, :am]
-      pp [:g, :g, :am, :am]
-      pp [:am, :c, :g, :am, :am, :am, :am]
-      pp [:g, :g, :em, :am]
-    end
+    pp [:am, :c, :g, :am, :am, :am, :am]
+    pp [:g, :g, :am, :am]
+    pp [:am, :c, :g, :am, :am, :am, :am]
+    pp [:g, :g, :em, :am]
   when :verse
-    2.times do
-      pp [:am, :g, :c, :am]
-      pp [:g, :em, :am, :am]
-    end
+    pp [:am, :g, :c, :am]
+    pp [:g, :em, :am, :am]
   end
 end
 

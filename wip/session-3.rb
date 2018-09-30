@@ -24,7 +24,7 @@ live_loop :synth do
   sync_bpm :tick
 
   use_synth :pulse
-  use_synth_defaults amp: 0.5, attack: 0, decay: 0, release: 0.01, sustain: 0.05
+  use_synth_defaults amp: 0.5, attack: 0, decay: 0, release: 0.01, sustain: 0.5
 
   4.times do
     go(pick(scale(:a2, :minor_pentatonic)))

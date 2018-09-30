@@ -4,7 +4,7 @@ $drum_style = :intro
 
 $walks = 1
 # :main, :break
-$walk_pattern = :break
+$walk_pattern = :main
 $walk_style = :apr
 
 $sweeps = 1
