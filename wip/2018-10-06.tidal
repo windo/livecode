@@ -1,0 +1,60 @@
+d1 $ stack [
+    randcat [
+        sound "bd sd",
+        sound "bd sd" # gain 0.9,
+        sound "bd bd sd ~",
+        sound "bd ~ ~ sd",
+        sound "bd*4" # gain 1.1
+    ],
+    randcat [
+        sound "hh*4",
+        sound "hh*4",
+        sound "hh*8",
+        sound "hh*3"
+    ] # gain 1.3,
+    randcat [
+        sound "~ ~ ~ [cp cp]",
+        sound "~ ~ ~ cp" # gain 1.2
+    ]
+]
+
+d2 $ stack [
+    note (slowcat [
+        "a3*4", "", "d3*4", "",
+        "a3*4", "d3*4", "a3*4", "d3*4"
+    ]) # s "supersquare" # sustain 0.2 # crush 5 # gain 0.9
+]
+
+d3 $ silence
+
+d3 $ slow 2 $ (|-| note 3) $ someCyclesBy 0.2 (|+| note 12) $ note (randcat [
+        "0 7 10 12 19 15 14 12",
+        "17 19 17 12 7 3 0 -2"
+        --"0 7 9 -1 0 -5 -4 -7",
+        --"0 0 7 7 12 12 7 7",
+        --"0 0 0 0 0 0 0 0"
+    ]) #
+    s "supersaw" # room 0.6 # orbit 1
+
+d1 $ stack [
+  slow 2 $ ply 4 $ note "0 7 9 <-1 12>" # s "supersquare",
+  slow 8 $ (|-| note 12) $ note "0*4 7*4 0*4 [7 7 7 3]" # legato 0.75 # s "supersquare"
+] # room 0.5 # orbit 1
+
+d2 $ stack [
+  stack [
+    sound "<[bd bd sd sd] [bd*4 sd*4] [bd bd bd] [sd sd sd]>" # gain 1.3,
+    sound "<hh:7, hh:10>*4" # gain "<1.4 1.2>*4"
+  ],
+  fast 4 $ slow 7 $ scramble 7 $ fastcat [
+    sound "bd sd",
+    slow 2 $ sound "[bd sd]*4",
+    sound "bd*4",
+    sound "sd ~ ~ sd",
+    sound "hh hh hh",
+    sound "hh*8"
+  ] # gain 0
+]
+
+
+hush

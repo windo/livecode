@@ -1,10 +1,11 @@
-$drums = 1.0 
+$drums = 1
 # :intro, :breakbeat, :banging
-$drum_style = :intro
+$drum_style = :breakbeat
 
 $walks = 1
 # :main, :break
 $walk_pattern = :main
+# :apr, :single
 $walk_style = :apr
 
 $sweeps = 1
@@ -17,12 +18,11 @@ live_loop :metronome do
     4.times do
       cue :tick
       sleep 1
-      sleep 1e-6
     end
   end
 end
 
-play_scale = scale :a2, :minor, num_octaves:4
+$play_scale = scale :a2, :minor, num_octaves:4
 
 def apr(s, n, t)
   play s[n]
@@ -64,9 +64,9 @@ live_loop :walks do
       pattern.each do |i|
         case $walk_style
         when :apr
-          apr play_scale, i+7, 0.25
+          apr $play_scale, i+7, 0.25
         when :single
-          play play_scale[i+7]
+          play $play_scale[i+7]
           sleep 1
         end
       end
@@ -76,7 +76,7 @@ end
 
 def psweep(i, s)
   detune = 0.8
-  n = play_scale[i + 7] - 12
+  n = $play_scale[i + 7] - 12
   use_synth :pulse
   4.times do
     play n + rrand(0, detune) - detune / 2, release: s
@@ -105,7 +105,7 @@ live_loop :drums do
     'h' => Proc.new {
       sample :drum_cymbal_soft , amp: 8.0, sustain: 0, release: 0.05
     }
-  ], length: 4
+  ], length: 4.0
 
   with_fx :compressor, amp: $drums do
     case $drum_style
