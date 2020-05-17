@@ -1,10 +1,11 @@
 #!/bin/bash
 
 cd $(dirname $(readlink -f $0))
+readonly cli=sonic-pi-tool
 
 run() {
   # Pick an exercise
-  exercise=$(
+  local readonly exercise=$(
     find -iname '*.rb' | \
     sort --random-sort | \
     head -n1
@@ -12,24 +13,24 @@ run() {
 
   # Present the instruction
   clear
-  awk '/^#/ { print; next } // { quit }' $exercise
+  awk '/^#/ { print; next } // { quit }' "${exercise}"
   read -p "Press enter to start..."
 
   # Start the exercise
-  tmp=$(mktemp --suffix .rb)
-  startts=$(date +%s)
-  cat $exercise > $tmp
-  sonic_pi_cli < $tmp
+  local readonly tmp="$(mktemp --suffix .rb)"
+  local readonly startts="$(date +%s)"
+  cat "${exercise}" > "${tmp}"
+  "${cli}" < "${tmp}"
   vim $tmp
 
   # Finish the exercise
-  sonic_pi_cli stop
-  sonic_pi_cli clear
-  endts=$(date +%s)
+  "${cli}" stop
+  "${cli}" clear
+  local readonly endts=$(date +%s)
   clear
-  echo "Exercise took $(($endts - $startts)) seconds"
+  echo "Exercise took $((${endts} - ${startts})) seconds"
   read -p "Press enter for the next exercise..."
-  rm $tmp
+  rm "${tmp}"
 }
 
 while :; do
