@@ -8,10 +8,16 @@ $walk_pattern = :main
 # :apr, :single
 $walk_style = :apr
 
-$sweeps = 1
+$sweeps = 0.5
 
 live_loop :metronome do
   use_bpm 90
+
+  if tick(:metronome) == 0 then
+    sleep 1.0
+    cue :metronome
+  end
+
   cue :verse
   4.times do
     cue :bar
@@ -24,7 +30,7 @@ end
 
 $play_scale = scale :a2, :minor, num_octaves:4
 
-def apr(s, n, t)
+def apr(s, n, t, nosleep: false)
   play s[n]
   play s[n] - 12
   play s[n] - 24, amp: 0.5, release: 2
@@ -37,7 +43,7 @@ def apr(s, n, t)
   play s[n + 4] - 24, amp: 0.5, release: 2
   sleep t
   play s[n + 2]
-  sleep t
+  sleep t unless nosleep
 end
 
 live_loop :walks do
@@ -61,20 +67,21 @@ live_loop :walks do
   end
   with_fx :compressor, amp: $walks do
     with_fx :reverb, damp: 0.8 do
-      pattern.each do |i|
+      pattern.each_with_index do |i, idx|
+        nosleep = (idx == pattern.length - 1)
         case $walk_style
         when :apr
-          apr $play_scale, i+7, 0.25
+          apr $play_scale, i+7, 0.25, nosleep: nosleep
         when :single
           play $play_scale[i+7]
-          sleep 1
+          sleep 1 unless nosleep
         end
       end
     end
   end
 end
 
-def psweep(i, s)
+def psweep(i, s, nosleep: false)
   detune = 0.8
   n = $play_scale[i + 7] - 12
   use_synth :pulse
@@ -82,14 +89,14 @@ def psweep(i, s)
     play n + rrand(0, detune) - detune / 2, release: s
   end
   play n - 12, release: s/2
-  sleep s
+  sleep s unless nosleep
 end
 
 live_loop :sweeps do
   sync_bpm :verse
   with_fx :compressor, amp: $sweeps do
     psweep 0, 8
-    psweep 0, 8
+    psweep 0, 8, nosleep: true
   end
 end
 

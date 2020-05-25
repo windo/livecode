@@ -2,6 +2,11 @@ set_sched_ahead_time! (0.5)
 set_audio_latency! (-500)
 
 live_loop :tock do
+  if tick(:tock) == 0 then
+    sleep 1.0
+    cue :tock
+  end
+
   4.times do
     cue :tick
     sleep 1.0
@@ -18,7 +23,8 @@ def rchord(n, c, r)
 end
 
 live_loop :do_sweeps do
-  sync :tock
+  sync_bpm :tock
+
   def aplay(n, i, of)
     m = of.to_f / 2
     if (i >= of) or (i < 0) then
@@ -42,24 +48,24 @@ live_loop :do_sweeps do
     end
   end
   
-  def sweep(s)
+  def sweep(s, nosleep: false)
     l = (s.length / 4).to_i * 4
-    s.slice(0, l).each_index do |i|
+    s.to_a.slice(0, l).each_index do |i|
       sweeps(s, i, l, 4)
-      sleep (4.0 / l)
-    end
+      sleep (4.0 / l) unless nosleep and i==l-1
+   end
   end
   
   with_synth :prophet do
     sweep(rchord(:a, :m, 6))
     sweep(rchord(:c, :M, 6))
     sweep(rchord(:g, :M, 6))
-    sweep(rchord(:f, :M, 6))
+    sweep(rchord(:f, :M, 6), nosleep: true)
   end
 end
 
 live_loop :drums do
-  sync :tock
+  sync_bpm :tock
   in_thread do
     sample :bd_haus
     sleep 1.0

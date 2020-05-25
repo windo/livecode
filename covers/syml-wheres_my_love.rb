@@ -1,6 +1,22 @@
 # SYML - Where's My Love
+#
+# ...
+#
+# Cold sheets
+# But where's my love
+# I am searching high
+# I'm searching low in the night
+#
+# Oooh, does she know that we bleed the same?
+# Oooh, don't wanna cry, but I break that way
+#
+# Did she run away? Did she run away? I don't know
+# If she ran away, If she ran away, come back home
+# Just come home
+#
+# ...
 
-case :verse
+case :chorus
 when :verse
   strum =
       [[:a3, :m], [:c4, :M], [:f4, :M], [:d4, :m]] * 3 +

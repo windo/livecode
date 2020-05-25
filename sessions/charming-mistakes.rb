@@ -39,6 +39,12 @@ $octaves = 3
 
 live_loop :metronome do
   use_bpm $bpm
+
+  if tick(:tock) == 0 then
+    sleep 1.0
+    cue :metronome
+  end
+
   cue :tock
   4.times do
     cue :tick

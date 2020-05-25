@@ -41,6 +41,6 @@ class Drummer
         end
       end
     end
-    sleep @length - time
+    # sleep @length - time
   end
 end
