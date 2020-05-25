@@ -1,30 +1,35 @@
 set_sched_ahead_time! (0.0)
 set_audio_latency! (-500)
 
-# So sorry I couldn't say
-# how much I love you
-# I only have
-# this modest great ape brain
-$mic_amp = 3.0
+# So sorry I couldn't say,
+# How much I love you,
+# I only have,
+# This modest great ape brain.
+
+$mic_amp = 0.0
 
 $base_layer1 = true
 $base_layer2 = true
 $base_layer3 = true
 
-$walks = 6
-$walk_pause = true
-# $walk_roots = ring :b3, :a3
-$walk_roots = ring :b3, :e4, :c5
-$walk_velocity = 60
+$walks = 8
+$walk_pause = false
+$walk_roots = ring :b3, :a3
+# $walk_roots = ring :b3, :e4, :c5
+$walk_velocity = 80
+
+if false then
+  midi_all_notes_off
+end
 
 live_loop :bar do
   use_bpm 140
-  
+
   if (tick :bar_start) == 0 then
     sleep 1
     cue :bar
   end
-  
+
   8.times do
     cue :tock
     4.times do
@@ -58,8 +63,8 @@ live_loop :drum do
             hh
           end
         when 1
-          at [2.5] do
-            hh(sustain: 0.5)
+          at [2.5, 3].pick(1) do
+            hh(sustain: 0.4)
           end
         when 2
           # nothing
@@ -87,69 +92,116 @@ def b(note, t, nosleep: false)
   sleep t unless nosleep
 end
 
+def play_lick(lick, keyboard: false)
+  lick.each_with_index do |(n, d), i|
+    keyboard([n]) if keyboard
+    b n, d, nosleep: i==lick.length-1
+  end
+end
+
+def keyboard_licks(licks)
+  # 1. translate sleeps into timestamps
+  by_ts = licks.map do |lick|
+    lick.inject([[0]]) do |acc, (n, d)|
+      this_ts = acc.last[0]
+      next_ts = this_ts + d
+      acc << [
+        next_ts, [this_ts, n]
+      ]
+    end[1..-1].map { |acc, v| v }
+  end
+  # 2. group by timestamp, in-order
+  grouped = Hash.new { |h, k| h[k] = [] }
+  by_ts.each do |lick|
+    lick.each do |ts, n|
+      grouped[ts] << n
+    end
+  end
+  # 3. at [timestamps], [notes] -> keyboard
+  timestamps, notes = grouped.to_a.transpose
+  at timestamps, notes do |notes|
+    keyboard(notes)
+  end
+end
+
+
 live_loop :base do
   sync_bpm :bar
+  lick1 = [
+    [:a3, 7],
+    [:e3, 1],
+
+    [:f3, 0.5],
+    [:e3, 0.5],
+    [:f3, 7],
+
+    [:d3, 8],
+
+    [:e3, 7],
+    [:f3, 0.5],
+    [:g3, 0.5],
+  ]
+  lick2 = [
+    [:c4, 4],
+    [:b3, 3.0/2],
+    [:a3, 3.0/2],
+    [:g3, 1],
+
+    [:a3, 7],
+    [:c4, 1],
+
+    [:d4, 1],
+    [:a3, 6],
+    [:c4, 1],
+
+    [:b3, 4],
+    [:a3, 3.0/2],
+    [:b3, 3.0/2 + 1],
+  ]
+  lick3 = [
+    [:e4, 4],
+    [:d4, 3.0/2],
+    [:c4, 3.0/2],
+    [:b3, 1],
+
+    [:c4, 8],
+
+    [:rest, 0.5],
+    [:e4, 0.5],
+    [:d4, 6],
+  ] 
+  if tick(:base_l3) % 2 == 0 then
+    lick3 += [
+      [:e4, 1],
+      [:d4, 8],
+    ]
+  else
+    lick3 += [
+      [:d3, 1],
+      [:b3, 8],
+    ]
+  end
+
+  keyboard_licks([lick1, lick2, lick3])
+
   in_thread do
     with_midi_defaults port: "Midi Through Port-0", channel: 0 do
-      b :a3, 7
-      b :e3, 1
-      
-      b :f3, 0.5
-      b :e3, 0.5
-      b :f3, 7
-      
-      b :d3, 8
-      
-      b :e3, 7
-      b :f3, 0.5
-      b :g3, 0.5, nosleep: true
+      play_lick(lick1, keyboard: false)
     end
   end if $base_layer1
   in_thread do
     with_midi_defaults port: "Midi Through Port-0", channel: 1 do
-      b :c4, 4
-      b :b3, 3.0/2
-      b :a3, 3.0/2
-      b :g3, 1
-      
-      b :a3, 7
-      b :c4, 1
-      
-      b :d4, 1
-      b :a3, 6
-      b :c4, 1
-      
-      b :b3, 4
-      b :a3, 3.0/2
-      b :b3, 3.0/2 + 1, nosleep: true
+      play_lick(lick2, keyboard: false)
     end
   end if $base_layer2
   in_thread do
     with_midi_defaults port: "Midi Through Port-0", channel: 2 do
       with_swing rand(0.1) do
-        b :e4, 4
-        b :d4, 3.0/2
-        b :c4, 3.0/2
-        b :b3, 1
-        
-        b :c4, 8
-        
-        sleep 0.5
-        b :e4, 0.5
-        b :d4, 6
-        
-        if rand_i(2) == 0 then
-          b :e4, 1
-          # last bar
-          b :d4, 8, nosleep: true
-        else
-          b :d3, 1
-          # last bar
-          b :b3, 8, nosleep: true
-        end
+        play_lick(lick3)
       end
     end
   end if $base_layer3
+
   sleep 31
 end
 
@@ -164,9 +216,9 @@ def w(note, t, nosleep: false)
   end
 end
 
-def ww(root, count, total: 8, nosleep: false, pulse: 0.5)
-  puts root, count
-  s = scale :a2, :minor, num_octaves: 3
+def ww(root, count, total: 4, nosleep: false, pulse: 0.5)
+  total = total / pulse
+  s = scale :a2, :minor, num_octaves: 4
   base_index = s.index(note(root))
   for c in 1..count
     w(s[base_index + (c-1)%3], pulse, nosleep: nosleep && (c == total))
@@ -198,7 +250,5 @@ live_loop :walks do
 end
 
 with_fx :bitcrusher, rate:20000, bits:6, amp: $mic_amp do
-  #with_fx :autotuner do
   live_audio :mic
-  #end
 end

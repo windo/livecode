@@ -6,7 +6,7 @@ $bpm = 140
 live_loop :metronome do
   use_bpm $bpm
   cue :tick
-  sleep 1.0 + 1e-6
+  sleep 1.0
 end
 
 live_loop :drums do

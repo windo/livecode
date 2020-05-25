@@ -2,7 +2,6 @@ live_loop :metronome do
   cue :tick
   sample :drum_cymbal_soft , amp: 0.1, sustain: 0.2, release: 0.05
   sleep 1.0/4
-  sleep 1e-6
 end
 
 define :p do |n|

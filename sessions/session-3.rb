@@ -2,7 +2,6 @@ live_loop :metronome do
   use_bpm 60
   cue :tick
   sleep 1
-  sleep 1e-6
 end
 
 live_loop :beat do

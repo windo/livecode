@@ -43,7 +43,6 @@ live_loop :metronome do
   4.times do
     cue :tick
     sleep 1.0
-    sleep 1e-6
   end
 end
 
