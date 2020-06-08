@@ -31,23 +31,25 @@ def keyboard(notes)
   puts keyboard_keys(notes)
 end
 
-use_random_seed(status[:avg_cpu]*100000)
+if false then
+  use_random_seed(status[:avg_cpu]*100000)
 
-case rand_i(2)
-when 0
-  r = scale(:c, :chromatic).choose
-  c = chord_names.choose
-  n = chord r, c
-  keyboard(n)
-  puts note_info(r).midi_string, c
-  puts n
-  play_chord n
-when 1
-  r = scale(:c, :chromatic).choose
-  s = scale_names.choose
-  n = scale(r, s)
-  keyboard(n)
-  puts note_info(r).midi_string, s
-  puts n
-  play_pattern_timed n, 0.1
+  case rand_i(2)
+  when 0
+    r = scale(:c, :chromatic).choose
+    c = chord_names.choose
+    n = chord r, c
+    keyboard(n)
+    puts note_info(r).midi_string, c
+    puts n
+    play_chord n
+  when 1
+    r = scale(:c, :chromatic).choose
+    s = scale_names.choose
+    n = scale(r, s)
+    keyboard(n)
+    puts note_info(r).midi_string, s
+    puts n
+    play_pattern_timed n, 0.1
+  end
 end

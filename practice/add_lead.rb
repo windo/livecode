@@ -1,17 +1,22 @@
-# Add a lead for the baseline.
+# Add a matching lead track for the baseline.
+#
+# Concentrate on the melody/harmony/rythm.
 
-$random_seed = RANDOM_SEED
-$bpm = 60
+set :random_seed, RANDOM_SEED
+set :bpm, 60
 
 live_loop :leads do
+  with_synth :dsaw do
+    # Add lead here!
+  end
+
   sync_bpm :tock
 end
-
 
 # --- stock base below ---
 
 live_loop :tock do
-  use_bpm $bpm
+  use_bpm get(:bpm)
   if tick(:tock) == 0 then
     sleep 1.0
     cue :tock
@@ -34,23 +39,31 @@ live_loop :drums do
   end
 end
 
-def b(n, t)
-  play n, sustain: t * 0.75, attack: 1.0/16, release: 1.0/16
-  play n + rand(0.1), sustain: t * 0.75, attack: 1.0/16, release: 1.0/16, amp: 0.5
-  play n - 12, sustain: t, attack: 1.0/16, release: 1.0/16, amp: 0.5
-  play n + 12, release: t, attack: 1.0/16, amp: 0.1
+define :b do |n, t|
+  with_fx :distortion, amp: 0.3 do
+    with_synth :fm do
+      5.times do
+        play n - 0.1 + rand(0.2), sustain: t * 0.75, attack: 1.0/16, release: 1.0/16
+      end
+    end
+    with_synth :beep do
+      play n, sustain: t * 0.75, attack: 1.0/16, release: 1.0/16
+      play n-12, sustain: t * 0.75, attack: 1.0/16, release: 1.0/16
+    end
+  end
   sleep t
 end
 
 live_loop :baseline do
   sync_bpm :tock
-  use_synth :fm
 
   times = [2.0/3, 1.0/6, 1.0/6] * 4
 
-  lick = with_random_seed $random_seed do
+  lick = with_random_seed get(:random_seed) do
     root = scale(:c2, :chromatic).choose
-    notes = scale(root, [:major, :minor].choose)
+    notes = scale(root, [
+      :major, :minor, :dorian, :phrygian, :lydian, :mixolydian, :locrian,
+    ].choose)
 
     base4 = [0] + (0..8).to_a.pick(3)
     base4 = ring(*base4)

@@ -1,6 +1,3 @@
-set_sched_ahead_time! (0.0)
-set_audio_latency! (-500)
-
 # So sorry I couldn't say,
 # How much I love you,
 # I only have,
@@ -53,22 +50,20 @@ live_loop :drum do
       sample :sn_zome
     end
     with_fx :level, amp: 0.7 do
-      with_swing rand(0.1) do
-        at [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5] do
+      at [0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5] do
+        hh
+      end
+      case rand_i(3)
+      when 0
+        at [0.75, 1.25] do
           hh
         end
-        case rand_i(3)
-        when 0
-          at [0.75, 1.25] do
-            hh
-          end
-        when 1
-          at [2.5, 3].pick(1) do
-            hh(sustain: 0.4)
-          end
-        when 2
-          # nothing
+      when 1
+        at [2.5, 3].pick(1) do
+          hh(sustain: 0.4)
         end
+      when 2
+        # nothing
       end
     end
   end
@@ -196,9 +191,7 @@ live_loop :base do
   end if $base_layer2
   in_thread do
     with_midi_defaults port: "Midi Through Port-0", channel: 2 do
-      with_swing rand(0.1) do
-        play_lick(lick3)
-      end
+      play_lick(lick3)
     end
   end if $base_layer3
 

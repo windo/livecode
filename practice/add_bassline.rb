@@ -1,19 +1,22 @@
-# Add a baseline to the lead.
+# Add a matching bassline to the lead.
+#
+# Concentrate on the melody/harmony/rythm.
 
-$random_seed = RANDOM_SEED
-$bpm = 60
+set :random_seed, RANDOM_SEED
+set :bpm, 60
 
-live_loop :baseline do
-  sync_bpm :tock
-
-  with_synth :fm do
+live_loop :bassline do
+  with_synth :subpulse do
+    # Add bassline here!
   end
+
+  sync_bpm :tock
 end
 
 # --- backing track below ---
 
 live_loop :tock do
-  use_bpm $bpm
+  use_bpm get(:bpm)
 
   if tick(:tock) == 0 then
     sleep 1.0
@@ -28,11 +31,12 @@ end
 
 live_loop :lead do
   sync_bpm :tock
-  use_synth :prophet
 
-  lick = with_random_seed $random_seed do
+  lick = with_random_seed get(:random_seed) do
     root = scale(:c, :chromatic).choose
-    notes = scale(root, [:major, :minor].choose)
+    notes = scale(root, [
+      :major, :minor, :dorian, :phrygian, :lydian, :mixolydian, :locrian,
+    ].choose)
 
     base_selector = [0] + [2, 4, 6].shuffle
     bases = base_selector.map { |i| notes[i] }
@@ -56,11 +60,13 @@ live_loop :lead do
   
   sleeps = ring 1.0/3, 2.0/3
   amps = ring 1.0, 0.7
-  lick.each do |n|
-    at [0, 0.5], [0, 12] do |d|
-      play n + d, amp: amps[tick(:amps)]
+  with_synth :prophet do
+    lick.each do |n|
+      at [0, 0.5], [0, 12] do |d|
+        play n + d, amp: amps[tick(:amps)]
+      end
+      sleep sleeps[tick(:sleeps)]
     end
-    sleep sleeps[tick(:sleeps)]
   end
 end
 

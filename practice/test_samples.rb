@@ -1,6 +1,6 @@
 # Play some external samples!
 
-def p(name)
+define :p do |name|
   path = ""
   sample path, name
 end

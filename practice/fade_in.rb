@@ -1,9 +1,9 @@
-# Fade in the baseline and full drum pattern over 4 iterations. Tweak FX
-# parameters (LPF cutoff, level amp, etc) to do so.
-
-use_bpm 40
+# Fade in the baseline and full drum pattern. Tweak FX parameters (LPF cutoff,
+# level amp, etc) to do so.
 
 live_loop :drums do
+  use_bpm 40
+
   with_fx :reverb do
     with_fx :level, amp: 0.5 do
       at line(0, 1) do
@@ -22,19 +22,19 @@ live_loop :drums do
   sleep 1.0
 end
 
-def base(n, sus)
-  play n, attack: 0, release: 0, sustain: sus
-  sleep sus
+define :bass do |n, d|
+  play n, attack: 0, release: 0, sustain: d
+  sleep d
 end
 
-live_loop :baseline do
-  sync :drums
+live_loop :bassline do
+  sync_bpm :drums
   use_synth :fm
 
   with_fx :normaliser, level: 0.25 do
     with_fx :distortion, distort: 0.01 do
       at line(0, 8, steps: 8*4) do
-        base :d3, 1.0/8
+        bass :d3, 1.0/8
       end
     end
   end
@@ -42,12 +42,12 @@ live_loop :baseline do
   with_fx :nlpf, cutoff: :c3 do
     with_fx :distortion, distort: 0.2 do
       at [0, 2, 4], [:a3, :g3, :f3] do |n|
-        base n, 1 + 3.0/4
-        base :d3, 1.0/8
-        base n, 1.0/8
+        bass n, 1 + 3.0/4
+        bass :d3, 1.0/8
+        bass n, 1.0/8
       end
       sleep 6
-      base :e3, 1.99
+      bass :e3, 1.99
     end
   end
 end

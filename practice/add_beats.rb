@@ -1,4 +1,4 @@
-# Spice up the drum pattern:
+# Build up the drum pattern:
 #   * Add/remove beats, vary timing
 #   * Add/replace percussion samples, vary sample parameters
 #   * Create multiple variations of the pattern(s)

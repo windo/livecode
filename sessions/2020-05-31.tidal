@@ -1,0 +1,16 @@
+d1 $ stack [
+  someCyclesBy 0.25 (# crush 4) $ stack [
+    slowcat [
+      s "bd bd . sd ~ ~ sd",
+      s "bd*8 sd*8" # gain 0.9 # speed ((/ 12) $ (+ 0.5) (run 16))
+    ] # gain 0.9,
+    someCycles (const $ s "") $ randcat [
+      s "hh*16",
+      s "hh(7,12)"
+    ]
+  ],
+  every 4 (fast 1.5)
+    $ s "[arpy]*4" # up "{0 3 7}%4"
+    # speed 0.125 # lpf 800 # gain 1.2 # cut "1",
+  jux (rev) $ s "speech*8" # n (irand 10) # gain (range 0.7 1.1 rand)
+]
