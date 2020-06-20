@@ -40,10 +40,17 @@ end
 
 live_loop :beat do
   sync_bpm :tock
-  at [0, 2] do
+  at [0, 2, 2.5] do
     sample :bd_haus
   end
-  at [1, 3] do
+  at [1, 1.75, 3] do
     sample :sn_zome
   end
+end
+
+live_loop :vj do
+  sync_bpm :tock
+  vj_bpm
+  vj_track if one_in(1)
+  vj_seek 0
 end

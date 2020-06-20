@@ -9,7 +9,7 @@ end
 # beep - amp level for recording beep
 # amp - amp level for output
 # ** - passed to playing the sample
-def live_audio_loop(name, length, take: 0, beep: 0.0, amp: 1.0, **kwargs)
+define :live_audio_loop do |name, length, take: 0, beep: 0.0, amp: 1.0, nosleep: false, **kwargs|
   key = [name, length]
   buf = buffer "#{name}_#{take}", length
 
@@ -20,6 +20,7 @@ def live_audio_loop(name, length, take: 0, beep: 0.0, amp: 1.0, **kwargs)
     with_synth :beep do
       play :c6, release: 0.1, amp: beep
     end
+    puts "recording: #{name}_#{take}"
 
     # Record!
     $_live_audio_loop_takes[key] = take
@@ -33,13 +34,17 @@ def live_audio_loop(name, length, take: 0, beep: 0.0, amp: 1.0, **kwargs)
     with_synth :beep do
       play :c6, release: 0.1, amp: beep
     end
+    puts "preview: #{name}"
 
     synth :sound_in, sustain: length, amp: amp
 
   else
     # The take exists - play it!
+    puts "playing: #{name}_#{take}"
     sample buf, amp: amp, **kwargs
   end
+
+  sleep length unless nosleep
 
   return buf
 end
