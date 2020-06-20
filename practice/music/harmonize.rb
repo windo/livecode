@@ -1,7 +1,9 @@
 #Harmonize the melody!
 
-set :random_seed, RANDOM_SEED
 set :bpm, 60
+set :use_scales, [:major, :minor, :dorian, :phrygian, :lydian, :mixolydian, :locrian]
+set :bars, 2
+set :random_seed, RANDOM_SEED
 
 define :p do |r, c|
   notes = chord(r, c)
@@ -47,27 +49,29 @@ live_loop :lead do
 
   lick = with_random_seed get(:random_seed) do
     root = scale(:c, :chromatic).choose
-    notes = scale(root, [
-      :major, :minor, :dorian, :phrygian, :lydian, :mixolydian, :locrian,
-    ].choose)
+    notes = scale(root, get(:use_scales).choose, num_octaves: 3) - 24
 
-    base_selector = (
-      [0] + (1..7).to_a.shuffle.slice(0, 3) +
-      [0, 4].pick + (1..7).to_a.shuffle.slice(0, 3) +
-      [0] + (1..7).to_a.shuffle.slice(0, 3) +
-      [0, 4].pick + (1..7).to_a.shuffle.slice(0, 3)
-    )
-    bases = base_selector.map { |i| notes[i] }
+    base_selector = []
+    get(:bars).times do |i|
+      case i % 2
+      when 0
+        base_selector += [0] + (1..7).to_a.shuffle.slice(0, 3)
+      when 1
+        base_selector += [0, 4].pick + (1..7).to_a.shuffle.slice(0, 3)
+      end
+    end
+    bases = base_selector.map { |i| notes[i+8] }
 
     accent_selector = base_selector.map do |n|
       case rand_i(2)
       when 0
-        n + rand_i(3) + 1
+        n + rand_i(4) + 1
       when 1
-        n - rand_i(3) - 1
+        n - rand_i(4) - 1
       end
     end
-    accents = accent_selector.map { |i| notes[i] }
+    accents = accent_selector.map { |i| notes[i+8] }
+    puts accents
 
     bases.zip(accents).flatten
   end

@@ -9,22 +9,29 @@ exercise=
 
 run() {
   # Pick an exercise
-  read -p "Next, [R]andom [A]gain [F]ilter [Q]uit: " action
+  read -p "Next, [R]andom [A]gain [F]ilter [P]ick [Q]uit: " action
   case "$action" in
     r|R|"")
       exercise="$(
-        basename "$(
-          find -maxdepth 1 -iname '*.rb' | \
-            egrep "${filter}" | \
-            sort --random-sort | \
-            head -n1
-        )"
+        find -iname '*.rb' | \
+          egrep -v "^./log/" | \
+          egrep "${filter}" | \
+          sort --random-sort | \
+          head -n1 | \
+          sed -e 's#^./##'
       )"
       ;;
     f|F)
       echo "Current filter: ${filter}"
       read -p "New filter: " filter
       continue
+      ;;
+    p|P)
+      echo Exercises:
+      find -iname '*.rb' | \
+        egrep -v "^./log/" | \
+        sed -e 's#^./##'
+      read -p "Exercise: " exercise
       ;;
     a|A)
       # Keep the exercise
@@ -45,7 +52,7 @@ run() {
   # Start the exercise
   local readonly tmp="$(
     echo log/"$(
-      echo ${exercise} | sed -e 's#.rb##'
+      echo ${exercise} | sed -e 's#.rb##' -e 's#/#_#g'
     )"-"$(
       date +%Y-%m-%d-%H:%M:%S
     )".rb

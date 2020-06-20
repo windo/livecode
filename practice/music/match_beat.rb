@@ -1,7 +1,8 @@
 # Match the muffled beat in your own live loop.
 
-set :thirds, true
 set :bpm, 120
+set :thirds, true
+set :bars, 2
 set :random_seed, RANDOM_SEED
 
 define :bd do
@@ -22,6 +23,12 @@ end
 
 live_loop :tock do
   use_bpm get(:bpm)
+
+  if tick(:tock) == 0 then
+    sleep 1.0
+    cue :tock
+  end
+
   8.times do
     cue :tick
     sleep 1
@@ -50,7 +57,7 @@ live_loop :beat do
     with_fx :lpf, cutoff: 50, amp: 1.0 do
       play :c5, release: 0.1
       with_bpm_mul 4 do
-        line(0, 8, steps:8).each do |i|
+        line(0, get(:bars)*4, steps: get(:bars)*4).each do |i|
           if i % 2 == 0 then
             at pick_beats(i * 4) do
               bd
@@ -64,4 +71,5 @@ live_loop :beat do
       end
     end
   end
+  sleep get(:bars)*4 - 1
 end

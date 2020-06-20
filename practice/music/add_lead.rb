@@ -3,6 +3,7 @@
 # Concentrate on the melody/harmony/rythm.
 
 set :random_seed, RANDOM_SEED
+set :use_scales, [:major, :minor, :dorian, :phrygian, :lydian, :mixolydian, :locrian]
 set :bpm, 60
 
 live_loop :leads do
@@ -61,9 +62,7 @@ live_loop :baseline do
 
   lick = with_random_seed get(:random_seed) do
     root = scale(:c2, :chromatic).choose
-    notes = scale(root, [
-      :major, :minor, :dorian, :phrygian, :lydian, :mixolydian, :locrian,
-    ].choose)
+    notes = scale(root, get(:use_scales).choose)
 
     base4 = [0] + (0..8).to_a.pick(3)
     base4 = ring(*base4)
