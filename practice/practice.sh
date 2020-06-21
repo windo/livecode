@@ -30,8 +30,19 @@ run() {
       echo Exercises:
       find -iname '*.rb' | \
         egrep -v "^./log/" | \
+        egrep "${filter}" | \
         sed -e 's#^./##'
       read -p "Exercise: " exercise
+      if ! [ -f "${exercise}" ]; then
+        exercise="$(
+          find -iname '*.rb' | \
+            egrep -v "^./log/" | \
+            egrep "${filter}" | \
+            egrep "${exercise}" | \
+            head -n1 | \
+            sed -e 's#^./##'
+        )"
+      fi
       ;;
     a|A)
       # Keep the exercise
@@ -40,6 +51,10 @@ run() {
       exit 0
       ;;
   esac
+
+  if !([ -f "${exercise}" ] && [ -n "${exercise}" ]); then
+    return
+  fi
 
   # Present the instruction
   clear
