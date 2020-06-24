@@ -25,8 +25,8 @@ define :live_audio_loop do |name, length, take: 0, beep: 0.0, amp: 1.0, nosleep:
     # Record!
     $_live_audio_loop_takes[key] = take
     cue "_record_#{name}"
-    with_fx :record, buffer: buf do
-      synth :sound_in, sustain: length, amp: amp
+    with_fx :record, buffer: buf, amp: amp do
+      synth :sound_in, sustain: length, amp: 1.0
     end
 
   # Preview mode
