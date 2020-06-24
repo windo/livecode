@@ -13,7 +13,7 @@ live_loop :tock do
   end
 end
 
-def rchord(n, c, r)
+define :rchord do |n, c, r|
   n = n - note(:c2)
   s = chord(n, c)
   r.times do |i|
@@ -25,7 +25,7 @@ end
 live_loop :do_sweeps do
   sync_bpm :tock
 
-  def aplay(n, i, of)
+  define :aplay do |n, i, of|
     m = of.to_f / 2
     if (i >= of) or (i < 0) then
       amp = 0.0
@@ -39,7 +39,7 @@ live_loop :do_sweeps do
     end
   end
   
-  def sweeps(s, i, of, n)
+  define :sweeps do |s, i, of, n|
     aplay s[i], i, of
     (n - 1).times do |p|
       d = (of.to_f / n) * (p + 1)
@@ -48,12 +48,12 @@ live_loop :do_sweeps do
     end
   end
   
-  def sweep(s, nosleep: false)
+  define :sweep do |s, nosleep: false|
     l = (s.length / 4).to_i * 4
     s.to_a.slice(0, l).each_index do |i|
       sweeps(s, i, l, 4)
       sleep (4.0 / l) unless nosleep and i==l-1
-   end
+    end
   end
   
   with_synth :prophet do
@@ -90,5 +90,5 @@ live_loop :drums do
 end
 
 with_fx :octaver do
-  live_audio :mic
+  live_audio :mic, :stop
 end

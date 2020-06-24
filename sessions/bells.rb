@@ -27,10 +27,8 @@ live_loop :beat do
   end
 end
 
-cue :last_root, chord(:c, :major)
 live_loop :walks do
   sync_bpm :tock
-  last_root = sync :last_root
   r = scale(:c, :chromatic).choose
   c = chord(r, [:major, :minor].choose)
 

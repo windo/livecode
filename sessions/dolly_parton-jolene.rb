@@ -2,7 +2,6 @@ live_loop :metronome do
   use_bpm 50
   cue :tick
   sleep 1.0
-  sleep 1e-3
 end
 
 $cmap = {
@@ -23,7 +22,7 @@ $pstyle = :chord
 $first_bar = true
 $last_bar = false
 
-def pchord(c)
+define :pchord do |c|
   c = chord(*$cmap[c])
   case $pstyle
   when :slow
@@ -50,7 +49,7 @@ def pchord(c)
   play_pattern_timed pattern, 1.0 / pattern.length, amp: 1.5
 end
 
-def pp(line)
+define :pp do |line|
   line.each_index do |i|
     cname = line[i]
     if i == 0 || line[i - 1] != cname then

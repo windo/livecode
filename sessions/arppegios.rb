@@ -5,8 +5,8 @@ $drum_style = :breakbeat
 $walks = 1
 # :main, :break
 $walk_pattern = :main
-# :apr, :single
-$walk_style = :apr
+# :arp, :single
+$walk_style = :arp
 
 $sweeps = 0.5
 
@@ -30,7 +30,7 @@ end
 
 $play_scale = scale :a2, :minor, num_octaves:4
 
-def apr(s, n, t, nosleep: false)
+define :arp do |s, n, t, nosleep: false|
   play s[n]
   play s[n] - 12
   play s[n] - 24, amp: 0.5, release: 2
@@ -70,8 +70,8 @@ live_loop :walks do
       pattern.each_with_index do |i, idx|
         nosleep = (idx == pattern.length - 1)
         case $walk_style
-        when :apr
-          apr $play_scale, i+7, 0.25, nosleep: nosleep
+        when :arp
+          arp $play_scale, i+7, 0.25, nosleep: nosleep
         when :single
           play $play_scale[i+7]
           sleep 1 unless nosleep
@@ -81,7 +81,7 @@ live_loop :walks do
   end
 end
 
-def psweep(i, s, nosleep: false)
+define :psweep do |i, s, nosleep: false|
   detune = 0.8
   n = $play_scale[i + 7] - 12
   use_synth :pulse

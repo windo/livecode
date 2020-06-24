@@ -22,18 +22,15 @@ end
 
 live_loop :guitar do
   sync_bpm :tock
-  guitar = live_audio_loop :heartbeats, 16, take: 1, amp: 0
-  play_cuts(guitar, 16, 32)
+  live_audio_loop :heartbeats, 16, take: 0, beep: 1, amp: 4, nosleep: true
+  # play_cuts(guitar, 16, 32)
 
-  live_audio_loop :lyrics, 16, take: 1
+  sleep 15
+end
 
-  with_fx :lpf, cutoff: :c5 do
-    with_fx :pitch_shift, pitch: -24 do
-      at line(0, 16) do
-        live_audio_loop :clinks, 16, take: 1
-      end
-    end
-  end
+live_loop :lyrics do
+  sync_bpm :guitar
+  live_audio_loop :lyrics, 16, take: 0, nosleep: true, amp: 1.0
 
   sleep 15
 end
