@@ -37,7 +37,7 @@ end
 live_loop :bassline do
   sync_bpm :drums
 
-  with_fx :normaliser, level: 0.5 do
+  with_fx :normaliser, level: 0.4 do
     with_fx :distortion, distort: 0.1 do
       at line(0, 8, steps: 8*4) do
         bass :d3, 1.0/8
@@ -70,7 +70,7 @@ define :lead do |n|
 end
 
 live_loop :lead do
-  sync_bpm :bassline
+  sync_bpm :drums
 
   with_fx :reverb, amp: 0.0 do
     at(
