@@ -1,4 +1,5 @@
-set :_osc_ip_port, "192.168.0.57:39000"
+set :_osc_ip_port, "*"
+
 def on_osc(path)
   with_real_time do
     loop_name = "_osc_#{path}"

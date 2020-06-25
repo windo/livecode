@@ -1,4 +1,4 @@
-set :_midi_input, 'keystation_mini_32_midi_1:4:1'
+set :_midi_input, '*'
 
 define :play_midi do |&block|
   live_loop :midi, init: {} do |last|
