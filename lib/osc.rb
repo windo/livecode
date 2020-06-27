@@ -5,7 +5,6 @@ def on_osc(path)
     loop_name = "_osc_#{path}"
     live_loop loop_name do
       cue_name = "/osc:#{get :_osc_ip_port}#{path}"
-      puts cue_name
       v = sync cue_name
       yield v
     end
@@ -31,12 +30,15 @@ def osc_trigger_one(path)
   end
 end
 
-def osc_set(path, key, default:0)
+def osc_set(path, key, default:0, &block)
   if get(key).nil? then
     set key, default
   end
   on_osc path do |v|
-    puts key, v
-    set key, v[0]
+    v = v[0]
+    if not block.nil? then
+      v = block.call(v)
+    end
+    set key, v
   end
 end
