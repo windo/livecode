@@ -1,7 +1,7 @@
 # Build up the drum pattern:
-#   * Add/remove beats, vary timing
-#   * Add/replace percussion samples, vary sample parameters
-#   * Create multiple variations of the pattern(s)
+#
+#   * Add/remove beats vary timing
+#   * Create multiple variations of the pattern
 
 live_loop :drums do
   at line(0, 4, steps: 16) do
