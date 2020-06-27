@@ -11,9 +11,22 @@ live_loop :beat do
   sleep 4
 end
 
-live_loop :midi_keyboard do
-  device = ""
-  n, velocity = sync "/midi/#{device}/note_on"
-  next if (velocity == 0)
-  play n
+live_loop :midi_keyboard, init: nil do |last|
+  if last.nil? then
+    last = {}
+  end
+
+  with_real_time do
+    n, velocity = sync "/midi:*/note_on"
+    if velocity == 0 then
+      if not last[n].nil? then
+        control last[n], amp: 0
+        last.delete(n)
+      end
+    else
+      last[n] = synth :fm, note: n, amp: velocity.to_f / 127, amp_slide: 0.1
+    end
+  end
+
+  last
 end
