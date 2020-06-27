@@ -85,7 +85,3 @@ end
 # rythm([0, 2, 4, 8, 11, 12])
 # rythm([0, 4, 4 + 4.0/3, 8, 12, 14])
 # rythm(line(0, 8, steps: 8) + line(1.5, 4.5))
-
-times = (line(0, 4) + [0.75, 2.5]).sort
-puts times
-puts rythm_slots(times)
