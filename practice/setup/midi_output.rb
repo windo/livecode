@@ -1,18 +1,9 @@
 # Connect a hardware or software MIDI device!
 
-# Send just this to stop the sound
-if false then
-  midi_all_notes_off
-end
-
 define :sound do |n|
-  port = ""
+  port = nil
   with_midi_defaults port: port, channel: 0 do
-    midi_note_on n
-    in_thread do
-      sleep 1
-      midi_note_off n
-    end
+    midi n
   end
 end
 
