@@ -60,12 +60,15 @@ end
 live_loop :blade, sync_bpm: :tock do
   use_synth :blade
   with_fx :lpf, cutoff: :c5, amp: 0.9 do
-    with_fx :distortion, distort: 0.7, mix: 0.4 do
-      in_thread do
-        play_pattern_timed(
+    with_fx :slicer, phase: 0.5, pulse_width: 0.875 do
+      with_fx :distortion, distort: 0.6, mix: 0.9 do
+        at(
+          line(0, 16, steps: 8),
           [:c2, :b1, :a1, :g1, :e2, :f2, :e2, :d2],
-          [2] * 8,
-        )
+        ) do |n|
+          play n, sustain: 2
+          play n + 12, amp: 0.5, sustain: 1.5
+        end
       end
     end
   end

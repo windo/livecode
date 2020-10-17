@@ -73,6 +73,7 @@ live_loop :bass do
         bass n, release: 0.4
       end
   end
+  sleep 3
 end
 
 live_loop :drums do

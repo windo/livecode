@@ -62,7 +62,10 @@ run() {
     /^#/ { print; next }
     /^$/ { exit }
   ' "${exercise}"
-  read -p "Press enter to start..."
+  read -p "Press enter to start, or [S]kip: " maybe_skip
+  if [[ "${maybe_skip}" == "s" ]] || [[ "${maybe_skip}" == "S" ]]; then
+    return
+  fi
 
   # Start the exercise
   local readonly tmp="$(

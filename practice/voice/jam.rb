@@ -1,3 +1,5 @@
+# Sing along to a chord progression
+
 set :range, [:e3, :c5]
 set :use_scales, [:major, :minor, :dorian, :phrygian, :lydian, :mixolydian, :locrian]
 set :bpm, 60
@@ -40,6 +42,5 @@ live_loop :backing do
     (0..(notes.length)).to_a.pick(4)
   )[cindex]
   cnotes = [notes[croot], notes[croot + 2], notes[croot + 4]]
-  keyboard cnotes
   p cnotes
 end

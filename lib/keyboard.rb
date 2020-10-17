@@ -8,13 +8,13 @@ define :keyboard_keys do |notes, from: nil|
   when (notes.is_a? SonicPi::Core::RingVector)
     notes = notes.to_a
   when (notes.is_a? Numeric)
-    notes = [notes]
+    notes = [notes.to_i]
   when (notes.is_a? Symbol)
     notes = [notes]
   else
     return notes.class.to_s
   end
-  notes = notes.map { |n| note(n) }
+  notes = notes.map { |n| note(n.to_i) }
 
   minimum = notes.min
   if not from.nil? and note(from) < minimum then

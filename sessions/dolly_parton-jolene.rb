@@ -14,7 +14,7 @@ $cmap = {
 # amp
 $drum_amp = 1.0
 # One of: :chorus, :verse
-  $part = :verse
+$part = :verse
 # One of: :slow, :fast, :chord
 $pstyle = :chord
 
