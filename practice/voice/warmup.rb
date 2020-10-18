@@ -19,6 +19,7 @@ live_loop :prompts do
   r = (note(from)..note(to)).to_a.choose
   s = get(:use_scales).choose
   notes = scale(r, s)
+  puts s
   keyboard notes
   puts notes
 

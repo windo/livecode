@@ -5,8 +5,24 @@ set :scale, [:c4, :mixolydian]
 
 set :solo, false
 
+set :chord_amp, 1.0
+set :chord_bass_amp, 1.0
+
+set :drone_amp, 1.0
+set :drone_slide_one_in, 24
+set :drone_harmonics_one_in, 8
+
+set :hh_amp, 0.5
+set :bd_amp, 1.5
+
+set :lala_amp, 4.0
+set :lala_sub_amp, 0.5
+set :lala_chord_amp, 1.0
+set :lala_dry_amp, 2.0
+
 live_loop :ticker do
   use_bpm 60
+
   case (tick(:scale) / 16) % 4
   when 0
     set :scale, [:c4, :ionian]
@@ -17,6 +33,7 @@ live_loop :ticker do
   when 3
     set :scale, [:c4, :aeolian]
   end
+
   cue :beat
   t = tick(:beat)
   if t%4 == 1 then
@@ -42,24 +59,28 @@ define :pchord do |notes|
     [[0, 0.75], [0.75, 0.625]],
     [[0, 1.0/3, 2.0/3], [1.0/3, 1.0/3, 1.0/3]],
   ].choose
-  at times, durations do |duration|
-    with_synth :saw do
-      notes.each do |n|
-        at [
-          [0], [1.0/16],
-        ].choose do
-          3.times do
-            play(
-              s[n] - 0.05 + rand(0.1), pan: rand(1) - 0.5,
-              attack: 0.05, release: duration,
-              amp: 0.4,
-            )
+
+  with_fx :level, amp: get(:chord_amp) do
+    at times, durations do |duration|
+      with_synth :saw do
+        notes.each do |n|
+          at [
+            [0], [1.0/16],
+          ].choose do
+            3.times do
+              play(
+                s[n] - 0.05 + rand(0.1), pan: rand(1) - 0.5,
+                attack: 0.05, release: duration,
+                amp: 0.4,
+              )
+            end
           end
         end
       end
     end
   end
-  with_fx :level, amp: 1.0 do
+
+  with_fx :level, amp: get(:chord_bass_amp) do
     with_synth :subpulse do
       if one_in(6) then
         times = [0]
@@ -134,7 +155,7 @@ live_loop :drone, init: 0 do |step|
   ]
   ni, oct = bases[step]
 
-  mixer_channel do
+  mixer_channel amp: get(:drone_amp) do
     at line(0, 4, steps: 16) do |t, i|
       n = s[ni] + oct * 12
       if i == 15 and one_in(2) then
@@ -143,11 +164,11 @@ live_loop :drone, init: 0 do |step|
           drop -= 12
         end
         pdrone drop, drop
-      elsif one_in(24) then
+      elsif one_in(get(:drone_slide_one_in)) then
         pdrone n + 1, n
-      elsif one_in(24) then
+      elsif one_in(get(:drone_slide_one_in)) then
         pdrone n, n - 1
-      elsif one_in(8) then
+      elsif one_in(get(:drone_harmonics_one_in)) then
         if s.to_a.include?(n + 3 % 12) then
           just_minor_third = hz_to_midi(midi_to_hz(n) * 6.0 / 5.0)
           pdrone n + 3, just_minor_third
@@ -155,7 +176,7 @@ live_loop :drone, init: 0 do |step|
           just_major_third = hz_to_midi(midi_to_hz(n) * 5.0 / 4.0)
           pdrone n + 4, just_major_third
         end
-      elsif one_in(8) then
+      elsif one_in(get(:drone_harmonics_one_in)) then
         just_fifth = hz_to_midi(midi_to_hz(n) * 3.0 / 2.0)
         pdrone n + 7, just_fifth
       else
@@ -204,7 +225,7 @@ live_loop :percussion do
       hh.delete_at(0)
     end
 
-    with_fx :compressor, amp: 0.5 do
+    with_fx :compressor, amp: get(:hh_amp) do
       at line(0, 4) do
         at hh do |i|
           t = i == 0 ? 2 : [0.5, 1, 1.5].choose
@@ -225,7 +246,7 @@ live_loop :percussion do
     end
 
     # bass
-    with_fx :compressor, amp: 1.5 do
+    with_fx :compressor, amp: get(:bd_amp) do
       with_fx :lpf do
         sample :bd_boom, amp: 2.0
         synth :pulse, note: :c1
@@ -267,15 +288,17 @@ Hum, hum, hum, hum, hum, hum...
 
 live_loop :lala do
   sync_bpm :bar
-  mixer_channel solo: true, amp: 4.0 do
+  mixer_channel solo: true, amp: get(:lala_amp) do
     s = scale(*get(:scale)) - 24
     puts "lala: #{get(:scale)[1]}: #{keyboard_keys(s)}"
-    with_fx :lpf, amp: 0.3, cutoff: s[0]-12 do
+
+    with_fx :lpf, amp: get(:lala_sub_amp), cutoff: s[0]-12 do
       with_fx :distortion, distort: 0.8 do
         live_audio :subharmonics
       end
     end
-    with_fx :level, amp: 2.0 do
+
+    with_fx :level, amp: get(:lala_chord_amp) do
       with_fx :compressor do
         with_fx :autotuner, note: s[0] do
           with_fx :bpf, centre: s[0] do
@@ -299,7 +322,8 @@ live_loop :lala do
         end
       end
     end
-    with_fx :level, amp: 1.0 do
+
+    with_fx :level, amp: get(:lala_dry_amp) do
       live_audio :mic
     end
   end
