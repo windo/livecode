@@ -41,15 +41,18 @@ live_loop :beat do
       if i == 0 then
         amp = 3.0
       end
+      trace_drum :bd
       sample :bd_haus, sustain: 4.0/bds/2, release: 4.0/bds/2, amp: amp
     end
     offset1, offset2 = ring([0.25, 0.75], [0.5, 0.625])[tick(:sn)]
     at (line(0, 4) + offset1) + (line(0, 4) + offset2) do
+      trace_drum :sn
       sample :sn_zome, amp: 2.0, sustain: 4.0/16
     end
     hhs = ring(8 * 3, 32, 4 * 5, 32)[tick(:hh)]
     with_fx :hpf, amp: 1.5 do
       at line(0, 4, steps: hhs) do
+        trace_drum :hh
         sample :drum_cymbal_closed, start: 0.05, sustain: 4.0/hhs/2
       end
     end
@@ -71,6 +74,7 @@ end
 define :bass do |n, low_amp: 1.0|
   synth :fm, note: n, attack: 0.2, sustain: 0.25, release: 0.2, amp: 0.4
   synth :fm, note: n - 12, attack: 0.01, sustain: 0.2, release: 0.3, amp: 1.0
+  trace_note :bass, n
   3.times do
     synth :pulse, note: n - 24 + rand(0.02), attack: 0.01, sustain: 0.3, release: 0.7, amp: 0.1 * low_amp
   end
@@ -107,6 +111,7 @@ define :walk_fx do |&block|
 end
 
 define :walk do |n|
+  trace_note :walk, n, 0.2
   synth :dsaw, note: n, sustain: 0.1, release: 0.1
   in_thread do
     3.times do

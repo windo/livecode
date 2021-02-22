@@ -1,3 +1,4 @@
+# Voice warmup exercise
 set :range, [:e3, :c5]
 set :use_scales, [:major, :minor, :dorian, :phrygian, :lydian, :mixolydian, :locrian]
 set :bpm, 60

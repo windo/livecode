@@ -1,7 +1,7 @@
 $s = scale(:ab2, :minor, octaves: 2)
 
 if false then
-  set :synth_break, false
+  set :synth_break, true
   set :chorus, false
 end
 
@@ -26,7 +26,6 @@ live_loop :bar do
     end
   end
 end
-
 
 define :play_base do |n, sustain: 0.0, **kwargs|
   with_synth :fm do

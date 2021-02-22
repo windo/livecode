@@ -10,13 +10,17 @@ with_fx :autotuner, mix: 0.0, amp: 1.0 do
 end
 
 define :p do |notes|
-  with_fx :lpf, cutoff: :c7 do
-    4.times do
-      notes.each do |n|
-        synth :fm, note: n, attack: 0.05, release: 0.23
-        synth :pulse, note: n, release: 0.25
-      end
-      sleep 0.25
+  with_fx :compressor do
+    synth :pulse, note: notes.min - 24, release: 1.0
+    synth :pulse, note: notes.min - 36, release: 1.0
+  end
+  notes.each do |n|
+    synth :fm, note: n, attack: 0.01, release: 0.75
+  end
+  at line(0, 1) do
+    notes.each do |n|
+      synth :saw, note: n, attack: 0.05, release: 0.23
+      synth :pulse, note: n, release: 0.25
     end
   end
 end
@@ -43,4 +47,5 @@ live_loop :backing do
   )[cindex]
   cnotes = [notes[croot], notes[croot + 2], notes[croot + 4]]
   p cnotes
+  sleep 1.0
 end

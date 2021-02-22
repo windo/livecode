@@ -1,27 +1,49 @@
 set :_midi_input, '*'
 
-define :play_midi do |&block|
+define :on_midi_control do |midi_input=nil, &block|
+  live_loop :_midi_contol do
+    use_real_time
+    midi_input = get(:_midi_input) if midi_input.nil?
+
+    c, v = sync "/midi:#{midi_input}/control_change"
+    block.call(c, v)
+  end
+end
+
+define :play_midi do |midi_input=nil, &block|
   live_loop :_play_midi, init: {} do |last|
     use_real_time
 
-    n, v = sync "/midi:#{get :_midi_input}/note_on"
+    midi_input = get(:_midi_input) if midi_input.nil?
+
+    n, v = sync "/midi:#{midi_input}/note_on"
+
+    note_off = lambda do |n|
+      case
+      when n.kind_of?(Array)
+        n.each do |n|
+          note_off.call(n)
+        end
+      when n.is_a?(Proc)
+        n.call
+      when (n.class.name == 'SonicPi::SynthNode')  # Don't have access to class
+        control n, amp: 0
+      else
+        puts "how to stop a #{n.class.name}?"
+      end
+    end
 
     if v == 0 then
       if last.include? n then
-        if last[n].kind_of?(Array) then
-          last[n].each do |s|
-            control s, amp: 0
-          end
-        else
-          control last[n], amp: 0
-        end
+        note_off.call(last[n])
         last.delete n
       end
     else
       # I'd like to do ~infinite sustain but there is no way to actually cancel
       # a note?
       sustain = 8
-      last[n] = block.call(n, sustain: sustain, amp: v.to_f/127, amp_slide: 0.1)
+      amp = v.to_f/127
+      last[n] = block.call(n, sustain: sustain, amp: amp, amp_slide: 0.1, vel_f: amp, last: last)
     end
 
     last

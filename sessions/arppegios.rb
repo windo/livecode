@@ -1,14 +1,14 @@
 $drums = 1
 # :intro, :breakbeat, :banging
-$drum_style = :breakbeat
+$drum_style = :intro
 
 $walks = 1
 # :main, :break
 $walk_pattern = :main
 # :arp, :single
-$walk_style = :arp
+$walk_style = :single
 
-$sweeps = 0.5
+$sweeps = 0
 
 live_loop :metronome do
   use_bpm 90
