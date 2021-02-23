@@ -16,6 +16,7 @@ live_loop :bar do
     sleep 1
     cue :bar
   end
+  trace_sync
   4.times do
     cue :tock
     cue :chord, get(:chord_ring)[tick(:chord)]

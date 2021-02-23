@@ -8,6 +8,7 @@ end
 live_loop :bar do
   use_bpm 75
 
+  trace_sync
   if tick(:bar) == 0 then
     sleep 1
     cue :bar
@@ -27,7 +28,8 @@ live_loop :bar do
   end
 end
 
-define :play_base do |n, sustain: 0.0, **kwargs|
+define :play_bass do |n, sustain: 0.0, **kwargs|
+  trace_note :bass, n, sustain
   with_synth :fm do
     play n, sustain: sustain-0.05, release: 0.05
     sleep 0.1+rand(0.1)
@@ -35,7 +37,7 @@ define :play_base do |n, sustain: 0.0, **kwargs|
   end
 end
 
-define :with_base_fx do |&block|
+define :with_bass_fx do |&block|
   with_fx :lpf, cutoff: :c4 do
     with_fx :distortion, mix: 0.2, mix_slide: 1.5 do |distortion|
       block.call distortion
@@ -43,10 +45,10 @@ define :with_base_fx do |&block|
   end
 end
 
-live_loop :base do
+live_loop :bass do
   sync_bpm :bar
 
-  with_base_fx do |distortion|
+  with_bass_fx do |distortion|
     if get :chorus then
       at [ 0, 4, 8, 12, 16, ], [ 4, 2, 2, 3, 0, ] do |t, n, i|
         at [0, 0.75, 2, 2.75] do |t, i|
@@ -55,7 +57,7 @@ live_loop :base do
           if i % 2 == 1 then
             sustain = 1.25
           end
-          play_base $s[n], sustain: sustain
+          play_bass $s[n], sustain: sustain
         end
       end
       sleep 19.5
@@ -70,23 +72,23 @@ live_loop :base do
         6, 5,
         4, 3,
         2, 0,
-        ] do |t, n, i|
-          nt = [0, 0.75, 2]
-          sustain = [0.5, 1.25, 0.5]
-          if i % 2 == 1 then
-            nt = [0]
-            sustain = [0.5]
-          end
-          if i == 6 then
-            nt = [0, 0.75, 2, 2.75]
-            sustain = [0.5, 1.25, 0.5, 1.25]
-            control distortion, mix: 1.0, distort: 0.7
-          end
-          at nt, sustain do |sustain|
-            play_base $s[n], sustain: sustain
-          end
+      ] do |t, n, i|
+        nt = [0, 0.75, 2]
+        sustain = [0.5, 1.25, 0.5]
+        if i % 2 == 1 then
+          nt = [0]
+          sustain = [0.5]
         end
-        sleep 15.5
+        if i == 6 then
+          nt = [0, 0.75, 2, 2.75]
+          sustain = [0.5, 1.25, 0.5, 1.25]
+          control distortion, mix: 1.0, distort: 0.7
+        end
+        at nt, sustain do |sustain|
+          play_bass $s[n], sustain: sustain
+        end
+      end
+      sleep 15.5
     end
   end
 end

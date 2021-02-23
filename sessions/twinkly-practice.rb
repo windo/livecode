@@ -4,6 +4,7 @@ set :random_seed, 78
 set :bpm, 60
 
 define :lead do |n|
+  trace_note :lead, n, 0.25
   with_synth :pulse do
     play n - 12, release: 0.25
   end

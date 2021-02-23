@@ -25,4 +25,4 @@ dst="$(
   )".rb
 )"
 
-vim "${dst}" "${src}"
+vim "${src}" -c "vsplit ${dst}"

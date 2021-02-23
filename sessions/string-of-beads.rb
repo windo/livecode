@@ -65,6 +65,7 @@ Dum, dum, dum, dum, dum, dum...
 
 live_loop :ticker do
   use_bpm 60
+  trace_sync
 
   if get(:reset_scale_tick) then
     tick_reset(:scale)
@@ -119,6 +120,7 @@ define :pchord do |notes|
           at [
             [0], [1.0/16],
           ].choose do
+            trace_note :chord, s[n], duration
             3.times do
               play(
                 s[n] - 0.05 + rand(0.1), pan: rand(1) - 0.5,
@@ -178,6 +180,7 @@ live_loop :chords do
 end
 
 define :pdrone do |n, to_n|
+  trace_note :drone, n, 0.1
   [
     [0, 1.0, 0.5, true],
     [12, 1.0/4, 1.0, false],
@@ -261,7 +264,7 @@ live_loop :percussion do
   mixer_channel solo: false, amp: get(:percussion_amp) do
     # hihats
     steps = [4, 5, 6].choose
-   hh = line(0, 1, steps: steps)
+    hh = line(0, 1, steps: steps)
     long = []
 
     if one_in(2) then
@@ -282,6 +285,7 @@ live_loop :percussion do
     with_fx :compressor, amp: get(:hh_amp) do
       at line(0, 4) do
         at hh do |i|
+          trace_drum :hh
           t = i == 0 ? 2 : [0.5, 1, 1.5].choose
           sample(
             :drum_cymbal_closed,
@@ -290,6 +294,7 @@ live_loop :percussion do
           )
         end
         at long do
+          trace_drum :hh
           sample(
             :drum_cymbal_closed,
             rate: 0.9, sustain: 4.0/steps, release: 4.0/steps/3,
@@ -302,6 +307,7 @@ live_loop :percussion do
     # bass
     with_fx :compressor, amp: get(:bd_amp) do
       with_fx :lpf do
+        trace_drum :bd
         sample :bd_boom, amp: 2.0
         synth :pulse, note: :c1
         synth :bnoise, release: 3.0, amp: 0.25
@@ -318,6 +324,7 @@ live_loop :lala do
   mixer_channel solo: true, amp: get(:lala_amp) do
     s = scale(*get(:scale)) - 12
     puts "lala: #{get(:scale)[1]}: #{keyboard_keys(s)}"
+    trace_note :lala, [s[0], s[2], s[4]], 1.0
 
     with_fx :lpf, amp: get(:lala_sub_amp), cutoff: s[0], res: 0.7 do
       with_fx :pitch_shift, pitch: -12 do
