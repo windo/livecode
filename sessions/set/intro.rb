@@ -1,3 +1,11 @@
+=begin
+
+Some kind of arpeggiated sonic mayhem.
+
+How to get to something compelling without spending too much time typing up
+front?
+
+=end
 set :walk_pattern, ring(3, -7, 4, 2)
 set :walk_resets, ring(0, 1, 2, 0, 3)
 set :chord_ring, ring(

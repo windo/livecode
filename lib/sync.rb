@@ -12,14 +12,31 @@ define :ssync do |cue_name, interval|
   return sync_bpm cue_name
 end
 
-define :ll do |name, interval, cue_name, &block|
+# Live loop with the following features:
+#  * Triggers at the last possible moment (allowing the loop body to be redefined)
+#  * Can deal with variable amount of sleeps or at-triggers in the loop body
+# 
+# The price to pay is that the sync will be triggered outside your live loop
+# with the sync value passed into the loop as one of the arguments and you will
+# have to specify the loop length up front.
+# 
+# ll :arp, 16, :bar, init: 0 do |state, sync_values|
+#   sleep 10
+#   at line(0, 6) do
+#     play :c
+#   end
+#   state
+# end
+define :ll do |name, interval, cue_name, init: nil, &block|
   in_thread do
-    v = sync_bpm cue_name
-    live_loop name, init: v do |v|
+    sync_values = sync_bpm cue_name
+    live_loop name, init: [init, sync_values], auto_cue: false do |values|
+      state, sync_values = values
       duration = block_duration do
-        block.call(*v)
+        state = block.call([state, sync_values])
       end
-      ssync cue_name, (interval - duration)
+      sync_values = ssync(cue_name, (interval - duration))
+      [state, sync_values]
     end
   end
 end

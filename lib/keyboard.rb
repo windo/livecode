@@ -42,6 +42,8 @@ define :keyboard_keys do |notes, from: nil|
   return buf
 end
 
+# [Run 1, Time 0.0]
+# ├ "C4: ̲□■□■̲□□■̲□■□■□"
 define :keyboard do |*args, **kwargs|
   puts keyboard_keys(*args, **kwargs)
 end
